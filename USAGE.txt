@@ -1,0 +1,8 @@
+Usage:
+  enc url [<input>...]
+
+Arguments:
+  <input>     Can be a filename or words.
+
+Options:
+  -h --help   Show this.
