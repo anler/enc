@@ -1,5 +1,6 @@
 Usage:
   enc url [<input>...]
+  enc base64 [<input>...]
 
 Arguments:
   <input>     Can be a filename or words.

@@ -1,47 +1,24 @@
-{-# LANGUAGE QuasiQuotes         #-}
-{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE QuasiQuotes #-}
 module Main where
 
-import           Control.Exception     (IOException, catch)
 import           Control.Monad         (when)
-import           Data.Bool             (bool)
-import           Data.List             (intercalate)
-import           Encoding.Url          (urlEncode)
+import           Encoding
 import           System.Console.Docopt
 import           System.Environment    (getArgs)
-import           System.Posix          (fileExist)
 
 main :: IO ()
 main = do
   args <- parseArgsOrExit patterns =<< getArgs
+  let handleWith = ($ (args `getAllArgs` argument "input"))
   when
     (args `isPresent` (command "url"))
-    ((args `getAllArgs` argument "input") |> handleUrl)
+    (handleWith urlEncoder)
 
-(|>) = flip ($)
+  when
+    (args `isPresent` (command "base64"))
+    (handleWith base64Encoder)
 
 patterns :: Docopt
 patterns = [docoptFile|USAGE.txt|]
 
 getArgOrExit = getArgOrExitWith patterns
-
-handleUrl :: [String] -> IO ()
-handleUrl options  =
-  case options of
-    []    -> handleUrlStdin
-    [arg] -> handleUrlFileOrWord arg
-    args  -> handleUrlWords args
-
-handleUrlStdin :: IO ()
-handleUrlStdin =
-  (getLine >>= putUrlEncoded >> handleUrlStdin) `catch` \(_ :: IOException) -> return ()
-
-handleUrlFileOrWord :: String -> IO ()
-handleUrlFileOrWord arg =
-  fileExist arg >>= (putUrlEncoded =<<) . bool (return arg) (readFile arg)
-
-handleUrlWords :: [String] -> IO ()
-handleUrlWords = putUrlEncoded . intercalate " "
-
-putUrlEncoded :: String -> IO ()
-putUrlEncoded = putStrLn . urlEncode

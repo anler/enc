@@ -15,9 +15,15 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Encoding.Url
+  exposed-modules:     Encoding
+                     , Encoding.Url
+                     , Encoding.Base64
   build-depends:       base >= 4.7 && < 5
                      , HTTP
+                     , base64-bytestring
+                     , bytestring
+                     , unix
+                     , transformers
 
   default-language:    Haskell2010
 
@@ -28,7 +34,7 @@ executable enc
   build-depends:       base
                      , enc
                      , docopt
-                     , unix
+
   default-language:    Haskell2010
 
 test-suite enc-test
